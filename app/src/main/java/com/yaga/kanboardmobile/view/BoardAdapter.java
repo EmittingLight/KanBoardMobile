@@ -1,5 +1,7 @@
 package com.yaga.kanboardmobile.view;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +36,17 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.BoardViewHol
         Board board = boards.get(position);
         holder.nameTextView.setText(board.getName());
         holder.descriptionTextView.setText(board.getDescription());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Context context = v.getContext();
+                Intent intent = new Intent(context, TaskListActivity.class);
+                intent.putExtra("boardId", board.getId());
+                intent.putExtra("boardTitle", board.getName());
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -51,4 +64,3 @@ public class BoardAdapter extends RecyclerView.Adapter<BoardAdapter.BoardViewHol
         }
     }
 }
-

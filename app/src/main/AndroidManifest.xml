@@ -13,19 +13,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KanBoardMobile"
         tools:targetApi="31">
+
+        <activity android:name=".view.TaskListActivity" /> <!-- 👈 ЭТО ДОБАВЬ -->
+
         <activity
             android:name=".view.AddTaskActivity"
             android:exported="false" />
-        <!-- Новый главный экран -->
+
         <activity
             android:name=".view.BoardListActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- Старая MainActivity без intent-filter -->
+        </activity>
+
         <activity
             android:name=".MainActivity"
             android:exported="true" />
