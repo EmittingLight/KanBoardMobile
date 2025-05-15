@@ -1,6 +1,9 @@
 package com.yaga.kanboardmobile.view;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,6 +34,16 @@ public class BoardListActivity extends AppCompatActivity {
 
         adapter = new BoardAdapter(boardList);
         recyclerView.setAdapter(adapter);
+
+        FloatingActionButton fab = findViewById(R.id.fabAddTask);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(BoardListActivity.this, AddTaskActivity.class);
+                intent.putExtra("boardId", 1); // пока тестово передаём ID первой доски
+                startActivity(intent);
+            }
+        });
     }
 }
-
