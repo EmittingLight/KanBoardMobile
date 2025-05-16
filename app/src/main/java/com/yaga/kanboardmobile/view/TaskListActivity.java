@@ -24,6 +24,9 @@ public class TaskListActivity extends AppCompatActivity {
     private List<Task> taskList;
     private FloatingActionButton fabAddTask;
 
+    private int boardId;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +38,8 @@ public class TaskListActivity extends AppCompatActivity {
 
         recyclerTasks.setLayoutManager(new LinearLayoutManager(this));
 
-        int boardId = getIntent().getIntExtra("boardId", -1);
+        boardId = getIntent().getIntExtra("boardId", -1);
+
         String boardTitle = getIntent().getStringExtra("boardTitle");
 
         textBoardTitle.setText("Задачи: " + boardTitle);
@@ -52,5 +56,13 @@ public class TaskListActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        taskList.clear();
+        taskList.addAll(TaskRepository.getTasksForBoard(boardId));
+        taskAdapter.notifyDataSetChanged();
     }
 }
