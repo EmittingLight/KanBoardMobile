@@ -24,6 +24,5 @@ public class TaskRepository {
     public static void deleteTask(Task task) {
         tasks.remove(task);
     }
-
 }
 

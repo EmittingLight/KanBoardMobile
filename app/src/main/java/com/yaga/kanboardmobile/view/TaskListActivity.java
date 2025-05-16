@@ -15,6 +15,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.yaga.kanboardmobile.R;
 import com.yaga.kanboardmobile.model.Task;
 import com.yaga.kanboardmobile.repository.TaskRepository;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
@@ -58,11 +59,21 @@ public class TaskListActivity extends AppCompatActivity {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getAdapterPosition();
-                Task taskToRemove = taskList.get(position);
-                TaskRepository.deleteTask(taskToRemove);
+                Task removedTask = taskList.get(position);
+
+                // Удаляем задачу
                 taskList.remove(position);
+                TaskRepository.deleteTask(removedTask);
                 taskAdapter.notifyItemRemoved(position);
 
+                // Показываем Snackbar с кнопкой "ОТМЕНИТЬ"
+                Snackbar.make(recyclerTasks, "Задача удалена", Snackbar.LENGTH_LONG)
+                        .setAction("ОТМЕНИТЬ", v -> {
+                            taskList.add(position, removedTask);
+                            TaskRepository.addTask(removedTask);
+                            taskAdapter.notifyItemInserted(position);
+                        })
+                        .show();
             }
         };
 
