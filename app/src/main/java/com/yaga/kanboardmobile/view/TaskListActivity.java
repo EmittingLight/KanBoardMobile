@@ -58,8 +58,11 @@ public class TaskListActivity extends AppCompatActivity {
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getAdapterPosition();
+                Task taskToRemove = taskList.get(position);
+                TaskRepository.deleteTask(taskToRemove);
                 taskList.remove(position);
                 taskAdapter.notifyItemRemoved(position);
+
             }
         };
 
