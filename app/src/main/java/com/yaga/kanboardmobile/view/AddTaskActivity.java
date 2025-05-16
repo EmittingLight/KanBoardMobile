@@ -10,7 +10,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.yaga.kanboardmobile.R;
 import com.yaga.kanboardmobile.model.Task;
-import com.yaga.kanboardmobile.repository.TaskRepository;
+import com.yaga.kanboardmobile.data.TaskDao;
+import com.yaga.kanboardmobile.data.TaskDatabaseHelper;
+
 
 public class AddTaskActivity extends AppCompatActivity {
 
@@ -37,7 +39,9 @@ public class AddTaskActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String task = taskInput.getText().toString().trim();
                 if (!task.isEmpty()) {
-                    TaskRepository.addTask(new Task(task, boardId));
+                    TaskDao taskDao = new TaskDao(AddTaskActivity.this);
+                    taskDao.addTask(new Task(task, boardId));
+                    taskDao.close();
 
                     Toast.makeText(AddTaskActivity.this, "Задача добавлена: " + task, Toast.LENGTH_SHORT).show();
                     finish();

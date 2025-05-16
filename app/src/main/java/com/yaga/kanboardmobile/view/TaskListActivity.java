@@ -24,6 +24,8 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 
 import androidx.core.content.ContextCompat;
+import com.yaga.kanboardmobile.data.TaskDao;
+import com.yaga.kanboardmobile.data.TaskDatabaseHelper;
 
 
 import java.util.List;
@@ -55,7 +57,10 @@ public class TaskListActivity extends AppCompatActivity {
 
         textBoardTitle.setText("Задачи: " + boardTitle);
 
-        taskList = TaskRepository.getTasksForBoard(boardId);
+        TaskDao taskDao = new TaskDao(this);
+        taskList = taskDao.getTasksForBoard(boardId);
+        taskDao.close();
+
         taskAdapter = new TaskAdapter(this, taskList, boardId);
 
         recyclerTasks.setAdapter(taskAdapter);
@@ -70,21 +75,29 @@ public class TaskListActivity extends AppCompatActivity {
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getAdapterPosition();
                 Task removedTask = taskList.get(position);
+                int taskId = removedTask.getId();
 
-                // Удаляем задачу
+                // Удаление из списка и базы
                 taskList.remove(position);
-                TaskRepository.deleteTask(removedTask);
                 taskAdapter.notifyItemRemoved(position);
 
-                // Показываем Snackbar с кнопкой "ОТМЕНИТЬ"
+                TaskDao taskDao = new TaskDao(TaskListActivity.this);
+                taskDao.deleteTask(taskId);
+                taskDao.close();
+
+                // Предложить «ОТМЕНИТЬ»
                 Snackbar.make(recyclerTasks, "Задача удалена", Snackbar.LENGTH_LONG)
                         .setAction("ОТМЕНИТЬ", v -> {
+                            TaskDao undoDao = new TaskDao(TaskListActivity.this);
+                            undoDao.addTask(removedTask);
+                            undoDao.close();
+
                             taskList.add(position, removedTask);
-                            TaskRepository.addTask(removedTask);
                             taskAdapter.notifyItemInserted(position);
                         })
                         .show();
             }
+
             @Override
             public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView,
                                     @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY,
@@ -142,8 +155,11 @@ public class TaskListActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        TaskDao taskDao = new TaskDao(this);
         taskList.clear();
-        taskList.addAll(TaskRepository.getTasksForBoard(boardId));
+        taskList.addAll(taskDao.getTasksForBoard(boardId));
+        taskDao.close();
         taskAdapter.notifyDataSetChanged();
     }
+
 }

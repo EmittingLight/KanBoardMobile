@@ -8,16 +8,14 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.yaga.kanboardmobile.R;
-import com.yaga.kanboardmobile.model.Task;
-import com.yaga.kanboardmobile.repository.TaskRepository;
+import com.yaga.kanboardmobile.data.TaskDao;
 
 public class EditTaskActivity extends AppCompatActivity {
 
     private EditText editTaskText;
     private Button buttonSave;
 
-    private int boardId;
-    private int taskIndex;
+    private int taskId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,15 +27,23 @@ public class EditTaskActivity extends AppCompatActivity {
 
         // Получаем данные из Intent
         String taskText = getIntent().getStringExtra("taskText");
-        boardId = getIntent().getIntExtra("boardId", -1);
-        taskIndex = getIntent().getIntExtra("taskIndex", -1);
+        taskId = getIntent().getIntExtra("taskId", -1);
+
+        if (taskId == -1) {
+            Toast.makeText(this, "Ошибка: задача не найдена", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
         editTaskText.setText(taskText);
 
         buttonSave.setOnClickListener(v -> {
             String updatedText = editTaskText.getText().toString().trim();
             if (!updatedText.isEmpty()) {
-                TaskRepository.updateTask(boardId, taskIndex, updatedText);
+                TaskDao taskDao = new TaskDao(this);
+                taskDao.updateTask(taskId, updatedText);
+                taskDao.close();
+
                 Toast.makeText(this, "Задача обновлена", Toast.LENGTH_SHORT).show();
                 finish();
             } else {

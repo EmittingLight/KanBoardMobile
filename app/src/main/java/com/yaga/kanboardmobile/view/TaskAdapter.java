@@ -1,5 +1,8 @@
 package com.yaga.kanboardmobile.view;
 
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Paint;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,52 +12,70 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.yaga.kanboardmobile.R;
+import com.yaga.kanboardmobile.data.TaskDao;
 import com.yaga.kanboardmobile.model.Task;
-import android.content.Context;
-import android.content.Intent;
 
 import java.util.List;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
 
-    private final List<Task> tasks;
-    private final int boardId;
     private final Context context;
+    private final List<Task> taskList;
+    private final int boardId;
 
-
-    public TaskAdapter(Context context, List<Task> tasks, int boardId) {
+    public TaskAdapter(Context context, List<Task> taskList, int boardId) {
         this.context = context;
-        this.tasks = tasks;
+        this.taskList = taskList;
         this.boardId = boardId;
     }
 
     @NonNull
     @Override
     public TaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
+        View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_task, parent, false);
-        return new TaskViewHolder(view);
+        return new TaskViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
-        Task task = tasks.get(position);
+        Task task = taskList.get(position);
         holder.textTask.setText(task.getText());
 
+        // Отображение зачёркивания
+        if (task.isCompleted()) {
+            holder.textTask.setPaintFlags(holder.textTask.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        } else {
+            holder.textTask.setPaintFlags(holder.textTask.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+        }
 
-        holder.itemView.setOnClickListener(v -> {
+        // Клик по задаче — переключение статуса
+        holder.textTask.setOnClickListener(v -> {
+            boolean newStatus = !task.isCompleted();
+            task.setCompleted(newStatus);
+
+            TaskDao dao = new TaskDao(context);
+            dao.toggleTaskCompleted(task.getId(), newStatus);
+            dao.close();
+
+            notifyItemChanged(position);
+        });
+
+        // Клик на редактирование
+        holder.itemView.setOnLongClickListener(v -> {
             Intent intent = new Intent(context, EditTaskActivity.class);
+            intent.putExtra("taskId", task.getId());
             intent.putExtra("taskText", task.getText());
             intent.putExtra("boardId", boardId);
             intent.putExtra("taskIndex", position);
             context.startActivity(intent);
+            return true;
         });
     }
 
-
     @Override
     public int getItemCount() {
-        return tasks.size();
+        return taskList.size();
     }
 
     static class TaskViewHolder extends RecyclerView.ViewHolder {
@@ -66,4 +87,3 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
         }
     }
 }
-
