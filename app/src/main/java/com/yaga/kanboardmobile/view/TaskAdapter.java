@@ -10,15 +10,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.yaga.kanboardmobile.R;
 import com.yaga.kanboardmobile.model.Task;
+import android.content.Context;
+import android.content.Intent;
 
 import java.util.List;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
 
-    private List<Task> tasks;
+    private final List<Task> tasks;
+    private final int boardId;
+    private final Context context;
 
-    public TaskAdapter(List<Task> tasks) {
+
+    public TaskAdapter(Context context, List<Task> tasks, int boardId) {
+        this.context = context;
         this.tasks = tasks;
+        this.boardId = boardId;
     }
 
     @NonNull
@@ -33,7 +40,17 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
         Task task = tasks.get(position);
         holder.textTask.setText(task.getText());
+
+
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, EditTaskActivity.class);
+            intent.putExtra("taskText", task.getText());
+            intent.putExtra("boardId", boardId);
+            intent.putExtra("taskIndex", position);
+            context.startActivity(intent);
+        });
     }
+
 
     @Override
     public int getItemCount() {

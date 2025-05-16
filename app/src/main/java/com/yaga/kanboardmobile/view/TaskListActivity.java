@@ -56,7 +56,8 @@ public class TaskListActivity extends AppCompatActivity {
         textBoardTitle.setText("Задачи: " + boardTitle);
 
         taskList = TaskRepository.getTasksForBoard(boardId);
-        taskAdapter = new TaskAdapter(taskList);
+        taskAdapter = new TaskAdapter(this, taskList, boardId);
+
         recyclerTasks.setAdapter(taskAdapter);
 
         ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {

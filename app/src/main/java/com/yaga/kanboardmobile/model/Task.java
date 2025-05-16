@@ -1,11 +1,26 @@
 package com.yaga.kanboardmobile.model;
 
 public class Task {
-    private int boardId;
     private String text;
+    private int boardId;
 
-    public Task(int boardId, String text) {
+    public Task(String text, int boardId) {
+        this.text = text;
         this.boardId = boardId;
+    }
+
+    // ✅ Добавляем второй конструктор
+    public Task(int boardId, String text) {
+        this.text = text;
+        this.boardId = boardId;
+    }
+
+    // Геттеры и сеттеры
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
         this.text = text;
     }
 
@@ -13,8 +28,7 @@ public class Task {
         return boardId;
     }
 
-    public String getText() {
-        return text;
+    public void setBoardId(int boardId) {
+        this.boardId = boardId;
     }
 }
-

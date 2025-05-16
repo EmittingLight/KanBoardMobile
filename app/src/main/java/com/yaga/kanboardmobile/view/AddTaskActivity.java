@@ -37,7 +37,8 @@ public class AddTaskActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String task = taskInput.getText().toString().trim();
                 if (!task.isEmpty()) {
-                    TaskRepository.addTask(new Task(boardId, task));
+                    TaskRepository.addTask(new Task(task, boardId));
+
                     Toast.makeText(AddTaskActivity.this, "Задача добавлена: " + task, Toast.LENGTH_SHORT).show();
                     finish();
                 } else {

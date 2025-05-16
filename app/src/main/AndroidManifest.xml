@@ -14,7 +14,8 @@
         android:theme="@style/Theme.KanBoardMobile"
         tools:targetApi="31">
 
-        <activity android:name=".view.TaskListActivity" /> <!-- 👈 ЭТО ДОБАВЬ -->
+        <activity android:name=".view.TaskListActivity" />
+        <activity android:name=".view.EditTaskActivity" />
 
         <activity
             android:name=".view.AddTaskActivity"
