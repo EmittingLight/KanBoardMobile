@@ -90,6 +90,48 @@ public class TaskDao {
         );
     }
 
+    public List<Task> getTasksFiltered(int boardId, Boolean completed) {
+        List<Task> tasks = new ArrayList<>();
+        String selection;
+        String[] selectionArgs;
+
+        if (completed == null) {
+            selection = TaskDatabaseHelper.COLUMN_BOARD_ID + "=?";
+            selectionArgs = new String[]{String.valueOf(boardId)};
+        } else {
+            selection = TaskDatabaseHelper.COLUMN_BOARD_ID + "=? AND " +
+                    TaskDatabaseHelper.COLUMN_COMPLETED + "=?";
+            selectionArgs = new String[]{
+                    String.valueOf(boardId),
+                    completed ? "1" : "0"
+            };
+        }
+
+        Cursor cursor = database.query(
+                TaskDatabaseHelper.TABLE_TASKS,
+                null,
+                selection,
+                selectionArgs,
+                null,
+                null,
+                TaskDatabaseHelper.COLUMN_CREATED_AT + " DESC"
+        );
+
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(cursor.getColumnIndexOrThrow(TaskDatabaseHelper.COLUMN_ID));
+                String text = cursor.getString(cursor.getColumnIndexOrThrow(TaskDatabaseHelper.COLUMN_TEXT));
+                boolean isCompleted = cursor.getInt(cursor.getColumnIndexOrThrow(TaskDatabaseHelper.COLUMN_COMPLETED)) == 1;
+
+                Task task = new Task(id, text, boardId, isCompleted);
+                tasks.add(task);
+            } while (cursor.moveToNext());
+    }
+
+        cursor.close();
+        return tasks;
+    }
+
 
     // ✅ Закрытие базы
     public void close() {

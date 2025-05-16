@@ -1,38 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <!-- ✅ Toolbar вместо ActionBar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="16dp">
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:titleTextColor="@android:color/white"
+        app:title="Задачи"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-        <TextView
-            android:id="@+id/textBoardTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Задачи доски"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:paddingBottom="16dp" />
+    <!-- 🧾 Название доски -->
+    <TextView
+        android:id="@+id/textBoardTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Задачи доски"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:padding="16dp" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerTasks"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="vertical" />
-    </LinearLayout>
+    <!-- 📋 Список задач -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerTasks"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scrollbars="vertical" />
 
+    <!-- ➕ Кнопка добавления -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddTask"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
+        android:layout_gravity="end|bottom"
         android:layout_margin="24dp"
         android:contentDescription="Добавить задачу"
         android:src="@android:drawable/ic_input_add"
-        app:backgroundTint="@color/purple_200" />
-</FrameLayout>
+        app:backgroundTint="@android:color/holo_purple" />
+</LinearLayout>

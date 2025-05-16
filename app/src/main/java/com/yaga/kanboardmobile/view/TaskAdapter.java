@@ -49,8 +49,18 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             holder.textTask.setPaintFlags(holder.textTask.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
         }
 
-        // Клик по задаче — переключение статуса
+        // Короткий клик — редактирование
         holder.textTask.setOnClickListener(v -> {
+            Intent intent = new Intent(context, EditTaskActivity.class);
+            intent.putExtra("taskId", task.getId());
+            intent.putExtra("taskText", task.getText());
+            intent.putExtra("boardId", boardId);
+            intent.putExtra("taskIndex", position);
+            context.startActivity(intent);
+        });
+
+// Долгий клик — переключение выполненности
+        holder.textTask.setOnLongClickListener(v -> {
             boolean newStatus = !task.isCompleted();
             task.setCompleted(newStatus);
 
@@ -59,16 +69,6 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             dao.close();
 
             notifyItemChanged(position);
-        });
-
-        // Клик на редактирование
-        holder.itemView.setOnLongClickListener(v -> {
-            Intent intent = new Intent(context, EditTaskActivity.class);
-            intent.putExtra("taskId", task.getId());
-            intent.putExtra("taskText", task.getText());
-            intent.putExtra("boardId", boardId);
-            intent.putExtra("taskIndex", position);
-            context.startActivity(intent);
             return true;
         });
     }

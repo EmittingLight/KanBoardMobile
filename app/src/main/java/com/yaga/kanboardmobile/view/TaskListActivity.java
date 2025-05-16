@@ -25,7 +25,12 @@ import android.graphics.drawable.Drawable;
 
 import androidx.core.content.ContextCompat;
 import com.yaga.kanboardmobile.data.TaskDao;
-import com.yaga.kanboardmobile.data.TaskDatabaseHelper;
+import androidx.appcompat.widget.Toolbar;
+
+
+import android.view.Menu;
+import android.view.MenuItem;
+
 
 
 import java.util.List;
@@ -42,6 +47,10 @@ public class TaskListActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_task_list);
 
@@ -158,6 +167,41 @@ public class TaskListActivity extends AppCompatActivity {
         TaskDao taskDao = new TaskDao(this);
         taskList.clear();
         taskList.addAll(taskDao.getTasksForBoard(boardId));
+        taskDao.close();
+        taskAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_filter, menu);
+
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        Boolean filter = null;
+
+        int id = item.getItemId();
+        if (id == R.id.filter_all) {
+            filter = null;
+        } else if (id == R.id.filter_completed) {
+            filter = true;
+        } else if (id == R.id.filter_pending) {
+            filter = false;
+        }
+
+        loadTasksWithFilter(filter);
+        return true;
+    }
+
+
+    // Метод загрузки задач с фильтром
+    private void loadTasksWithFilter(Boolean showCompleted) {
+        TaskDao taskDao = new TaskDao(this);
+        taskList.clear();
+        taskList.addAll(taskDao.getTasksFiltered(boardId, showCompleted));
         taskDao.close();
         taskAdapter.notifyDataSetChanged();
     }
