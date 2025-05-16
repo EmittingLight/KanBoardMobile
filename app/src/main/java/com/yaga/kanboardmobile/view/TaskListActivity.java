@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull; // ← ВАЖНО: вот это добавь!
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,6 +16,15 @@ import com.yaga.kanboardmobile.R;
 import com.yaga.kanboardmobile.model.Task;
 import com.yaga.kanboardmobile.repository.TaskRepository;
 import com.google.android.material.snackbar.Snackbar;
+
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+
+import androidx.core.content.ContextCompat;
+
 
 import java.util.List;
 
@@ -74,6 +83,44 @@ public class TaskListActivity extends AppCompatActivity {
                             taskAdapter.notifyItemInserted(position);
                         })
                         .show();
+            }
+            @Override
+            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView,
+                                    @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY,
+                                    int actionState, boolean isCurrentlyActive) {
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+
+                View itemView = viewHolder.itemView;
+                Paint paint = new Paint();
+                paint.setColor(Color.RED);
+
+                // Рисуем красный фон
+                if (dX != 0) {
+                    Rect background = new Rect(itemView.getLeft(), itemView.getTop(),
+                            itemView.getRight(), itemView.getBottom());
+                    c.drawRect(background, paint);
+
+                    // Иконка корзины
+                    Drawable icon = ContextCompat.getDrawable(TaskListActivity.this, android.R.drawable.ic_menu_delete);
+                    if (icon != null) {
+                        int iconMargin = (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
+                        int iconTop = itemView.getTop() + iconMargin;
+                        int iconBottom = iconTop + icon.getIntrinsicHeight();
+
+                        int iconLeft, iconRight;
+
+                        if (dX > 0) { // свайп вправо
+                            iconLeft = itemView.getLeft() + iconMargin;
+                            iconRight = iconLeft + icon.getIntrinsicWidth();
+                        } else { // свайп влево
+                            iconRight = itemView.getRight() - iconMargin;
+                            iconLeft = iconRight - icon.getIntrinsicWidth();
+                        }
+
+                        icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
+                        icon.draw(c);
+                    }
+                }
             }
         };
 
