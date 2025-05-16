@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull; // ← ВАЖНО: вот это добавь!
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,7 +25,6 @@ public class TaskListActivity extends AppCompatActivity {
     private TaskAdapter taskAdapter;
     private List<Task> taskList;
     private FloatingActionButton fabAddTask;
-
     private int boardId;
 
 
@@ -47,6 +48,24 @@ public class TaskListActivity extends AppCompatActivity {
         taskList = TaskRepository.getTasksForBoard(boardId);
         taskAdapter = new TaskAdapter(taskList);
         recyclerTasks.setAdapter(taskAdapter);
+
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                taskList.remove(position);
+                taskAdapter.notifyItemRemoved(position);
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerTasks);
+
 
         fabAddTask.setOnClickListener(new View.OnClickListener() {
             @Override
